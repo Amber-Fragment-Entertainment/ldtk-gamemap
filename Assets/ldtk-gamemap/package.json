@@ -1,0 +1,23 @@
+{
+  "name": "com.amberfragment.ldtk-gamemap",
+  "version": "0.1.0",
+  "displayName": "LDtk gamemap",
+  "description": "Solution to generate gamemap based on LDtk project",
+  "unity": "2020.2",
+  "unityRelease": "7f1",
+  "licensesUrl": "https://opensource.org/license/mit/",
+  "dependencies": {
+    "com.unity.editorcoroutines": "1.0.0",
+	"com.unity.nuget.newtonsoft-json": "3.0.2"
+  },
+  "keywords": [
+    "Pathfinding",
+    "Platformer",
+    "2D"
+  ],
+  "author": {
+    "name": "Amber Fragment",
+    "email": "tiago.martins180@gmail.com",
+    "url": "https://github.com/TiagoJSM"
+  }
+}
