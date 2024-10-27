@@ -1,3 +1,4 @@
+using Assets.ldtk_gamemap.Editor.Settings;
 using ldtk;
 using ldtk_simplified;
 using System.Collections;
@@ -17,7 +18,14 @@ namespace Assets.ldtk_gamemap.Editor
         [MenuItem("GameObject/LDtk/Create game map")]
         private static void CreateGameMap()
         {
-            var reader = new LDtkReader.LDtkReader("C:\\Gamedev\\ldtk test\\worldmap.ldtk");
+            var settings = LdtkGamemapSettings.Load();
+            
+            if(OpenProjectSettingsIfNotConfigured(settings))
+            {
+                return;
+            }
+
+            var reader = new LDtkReader.LDtkReader(settings.LdtkProjectPath);
             var levels = reader.LdtkJson.Levels;
 
             var simplifiedData = levels.Select(level => new System.Tuple<Level, SimplifiedData>(level, reader.GetSimplifiedDataForLevel(level)));
@@ -25,8 +33,27 @@ namespace Assets.ldtk_gamemap.Editor
 
             EnsureMapDirExists();
 
-            CopyBackgroundFiles(backgroundImagePaths);
-            AddSpritesToScene(simplifiedData);
+            CopyBackgroundFiles(backgroundImagePaths, settings);
+            AddSpritesToScene(simplifiedData, settings);
+        }
+
+        private static bool OpenProjectSettingsIfNotConfigured(LdtkGamemapSettings settings)
+        {
+            var ldtkProjectPath = settings == null ? null : settings.LdtkProjectPath;
+            if (string.IsNullOrEmpty(ldtkProjectPath))
+            {
+                Debug.LogError("LDtk project path not configured.");
+                SettingsService.OpenProjectSettings(LdtkGamemapSettingsRegister.SettingsPath);
+                return true;
+            }
+
+            if (!File.Exists(settings.LdtkProjectPath))
+            {
+                Debug.LogError("LDtk project at relative path doesn't exist.");
+                SettingsService.OpenProjectSettings(LdtkGamemapSettingsRegister.SettingsPath);
+                return true;
+            }
+            return false;
         }
 
         private static void EnsureMapDirExists()
@@ -35,12 +62,12 @@ namespace Assets.ldtk_gamemap.Editor
             AssetDatabase.CreateFolder("Assets", MapDirName);
         }
 
-        private static void CopyBackgroundFiles(IEnumerable<System.Tuple<Level, string>> backgroundImagePaths)
+        private static void CopyBackgroundFiles(IEnumerable<System.Tuple<Level, string>> backgroundImagePaths, LdtkGamemapSettings settings)
         {
             foreach (var backgroundImagePath in backgroundImagePaths)
             {
                 var level = backgroundImagePath.Item1;
-                var targetFileName = SpriteAssetFilename(level);
+                var targetFileName = SpriteAssetFilename(level, settings);
                 var targetFilePath = UnityPath.Combine(AbsoluteMapDirPath, targetFileName);
                 FileUtil.CopyFileOrDirectory(backgroundImagePath.Item2, targetFilePath);
             }
@@ -50,7 +77,7 @@ namespace Assets.ldtk_gamemap.Editor
             foreach (var backgroundImagePath in backgroundImagePaths)
             {
                 var level = backgroundImagePath.Item1;
-                var assetTargetFilePath = SpriteAssetPath(level);
+                var assetTargetFilePath = SpriteAssetPath(level, settings);
                 ConfigureSprite(assetTargetFilePath);
             }
 
@@ -71,12 +98,12 @@ namespace Assets.ldtk_gamemap.Editor
             importer.SaveAndReimport();
         }
 
-        private static void AddSpritesToScene(IEnumerable<System.Tuple<Level, SimplifiedData>> simplifiedData)
+        private static void AddSpritesToScene(IEnumerable<System.Tuple<Level, SimplifiedData>> simplifiedData, LdtkGamemapSettings settings)
         {
             foreach (var simplified in simplifiedData)
             {
                 var level = simplified.Item1;
-                var assetTargetFilePath = SpriteAssetPath(level);
+                var assetTargetFilePath = SpriteAssetPath(level, settings);
                 AddSpriteToScene(simplified.Item2, assetTargetFilePath);
             }
         }
@@ -85,10 +112,9 @@ namespace Assets.ldtk_gamemap.Editor
         {
             var UnityWorldCoord = new Vector2Int((int)simplifiedData.X, (int)simplifiedData.Y);
             var unityPos = LDtkCoordinatesConverter.LevelPosition(UnityWorldCoord, (int)simplifiedData.Height, 1);
-            //CoordinatesConverterLevelPosition(Vector2Int pixelPos, int pixelHeight, int pixelsPerUnit)
 
             var go = new GameObject(simplifiedData.Identifier, typeof(SpriteRenderer));
-            go.transform.position = unityPos; // new Vector2(simplifiedData.X, simplifiedData.Y);
+            go.transform.position = unityPos; 
             var spriteRenderer = go.GetComponent<SpriteRenderer>();
             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
             spriteRenderer.sprite = sprite;
@@ -96,11 +122,11 @@ namespace Assets.ldtk_gamemap.Editor
             spriteRenderer.size = new Vector2(simplifiedData.Width, simplifiedData.Height);
         }
 
-        private static string SpriteAssetFilename(Level level) => $"{level.Identifier}_Pathway.png";
+        private static string SpriteAssetFilename(Level level, LdtkGamemapSettings settings) => $"{level.Identifier}_{settings.GamemapLayer}.png";
 
-        private static string SpriteAssetPath(Level level)
+        private static string SpriteAssetPath(Level level, LdtkGamemapSettings settings)
         {
-            var targetFileName = SpriteAssetFilename(level);
+            var targetFileName = SpriteAssetFilename(level, settings);
             var assetTargetFilePath = UnityPath.Combine("Assets", MapDirName, targetFileName);
             return assetTargetFilePath;
         }
