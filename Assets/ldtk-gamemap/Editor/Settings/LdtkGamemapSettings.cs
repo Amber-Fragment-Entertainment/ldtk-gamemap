@@ -21,15 +21,23 @@ namespace Assets.ldtk_gamemap.Editor.Settings
         private string _ldtkRelativeProjectPath;
         [SerializeField]
         private string _gamemapLayer = "Pathway";
+        [SerializeField]
+        private float _mapScale = 1.0f;
+        [SerializeField]
+        private Vector2 _mapOffset = Vector2.zero;
 
         public string LdtkRelativeProjectPath => _ldtkRelativeProjectPath;
         public string LdtkProjectPath => Path.Combine(Application.dataPath, LdtkRelativeProjectPath);
         public string GamemapLayer => _gamemapLayer;
+        public float MapScale => _mapScale;
+        public Vector2 MapOffset => _mapOffset;
 
         public static string[] SettingFields => new string[]
         {
             nameof(_ldtkRelativeProjectPath),
             nameof(_gamemapLayer),
+            nameof(_mapScale),
+            nameof(_mapOffset),
         };
 
         public static LdtkGamemapSettings Load()

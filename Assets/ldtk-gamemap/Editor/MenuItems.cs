@@ -14,6 +14,7 @@ namespace Assets.ldtk_gamemap.Editor
     {
         private const string MapDirName = "Map";
         private static readonly string AbsoluteMapDirPath = $"{Application.dataPath}/{MapDirName}";
+        private const string TopLevelMapGameObjectName = "[MAP]";
 
         [MenuItem("GameObject/LDtk/Create game map")]
         private static void CreateGameMap()
@@ -32,6 +33,7 @@ namespace Assets.ldtk_gamemap.Editor
             var backgroundImagePaths = levels.Select(level => new System.Tuple<Level, string>(level, reader.PathwayImagePath(level)));
 
             EnsureMapDirExists();
+            DestroyTopLevelMapGameObject();
 
             CopyBackgroundFiles(backgroundImagePaths, settings);
             AddSpritesToScene(simplifiedData, settings);
@@ -60,6 +62,12 @@ namespace Assets.ldtk_gamemap.Editor
         {
             AssetDatabase.DeleteAsset(UnityPath.Combine("Assets", MapDirName));
             AssetDatabase.CreateFolder("Assets", MapDirName);
+        }
+
+        private static void DestroyTopLevelMapGameObject()
+        {
+            var go = GameObject.Find(TopLevelMapGameObjectName);
+            GameObject.DestroyImmediate(go);
         }
 
         private static void CopyBackgroundFiles(IEnumerable<System.Tuple<Level, string>> backgroundImagePaths, LdtkGamemapSettings settings)
@@ -100,26 +108,29 @@ namespace Assets.ldtk_gamemap.Editor
 
         private static void AddSpritesToScene(IEnumerable<System.Tuple<Level, SimplifiedData>> simplifiedData, LdtkGamemapSettings settings)
         {
+            var parent = new GameObject(TopLevelMapGameObjectName);
+
             foreach (var simplified in simplifiedData)
             {
                 var level = simplified.Item1;
                 var assetTargetFilePath = SpriteAssetPath(level, settings);
-                AddSpriteToScene(simplified.Item2, assetTargetFilePath);
+                AddSpriteToScene(simplified.Item2, assetTargetFilePath, parent, settings);
             }
         }
 
-        private static void AddSpriteToScene(SimplifiedData simplifiedData, string spritePath)
+        private static void AddSpriteToScene(SimplifiedData simplifiedData, string spritePath, GameObject parent, LdtkGamemapSettings settings)
         {
             var UnityWorldCoord = new Vector2Int((int)simplifiedData.X, (int)simplifiedData.Y);
-            var unityPos = LDtkCoordinatesConverter.LevelPosition(UnityWorldCoord, (int)simplifiedData.Height, 1);
+            var unityPos = LDtkCoordinatesConverter.LevelPosition(UnityWorldCoord, (int)simplifiedData.Height, 1.0f/settings.MapScale);
 
             var go = new GameObject(simplifiedData.Identifier, typeof(SpriteRenderer));
-            go.transform.position = unityPos; 
+            go.transform.position = unityPos + settings.MapOffset;
+            go.transform.parent = parent.transform;
             var spriteRenderer = go.GetComponent<SpriteRenderer>();
             var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
             spriteRenderer.sprite = sprite;
             spriteRenderer.drawMode = SpriteDrawMode.Sliced;
-            spriteRenderer.size = new Vector2(simplifiedData.Width, simplifiedData.Height);
+            spriteRenderer.size = new Vector2(simplifiedData.Width * settings.MapScale, simplifiedData.Height * settings.MapScale);
         }
 
         private static string SpriteAssetFilename(Level level, LdtkGamemapSettings settings) => $"{level.Identifier}_{settings.GamemapLayer}.png";
