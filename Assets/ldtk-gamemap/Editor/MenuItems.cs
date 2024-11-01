@@ -99,6 +99,7 @@ namespace Assets.ldtk_gamemap.Editor
             var textureSettings = new TextureImporterSettings();
             importer.ReadTextureSettings(textureSettings);
 
+            textureSettings.spriteMode = (int)SpriteDrawMode.Simple;
             textureSettings.textureType = TextureImporterType.Sprite;
             textureSettings.spriteMeshType = SpriteMeshType.FullRect;
             textureSettings.spriteAlignment = (int)SpriteAlignment.BottomCenter;
