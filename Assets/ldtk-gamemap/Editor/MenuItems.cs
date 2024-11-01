@@ -121,7 +121,7 @@ namespace Assets.ldtk_gamemap.Editor
         private static void AddSpriteToScene(SimplifiedData simplifiedData, string spritePath, GameObject parent, LdtkGamemapSettings settings)
         {
             var UnityWorldCoord = new Vector2Int((int)simplifiedData.X, (int)simplifiedData.Y);
-            var unityPos = LDtkCoordinatesConverter.LevelPosition(UnityWorldCoord, (int)simplifiedData.Height, 1.0f/settings.MapScale);
+            var unityPos = LDtkCoordinatesConverter.LevelPosition(UnityWorldCoord, (int)simplifiedData.Height, settings.MapScale);
 
             var go = new GameObject(simplifiedData.Identifier, typeof(SpriteRenderer));
             go.transform.position = unityPos + settings.MapOffset;

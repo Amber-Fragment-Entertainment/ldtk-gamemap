@@ -9,10 +9,10 @@ namespace Assets.ldtk_gamemap.Editor
 {
     public static class LDtkCoordinatesConverter
     {
-        public static Vector2 LevelPosition(Vector2Int pixelPos, int pixelHeight, float pixelsPerUnit)
+        public static Vector2 LevelPosition(Vector2Int pixelPos, int pixelHeight, float scale)
         {
             pixelPos += Vector2Int.up * pixelHeight;
-            return (Vector2)NegateY(pixelPos) / pixelsPerUnit;
+            return (Vector2)NegateY(pixelPos) * scale;
         }
 
         private static Vector2Int NegateY(Vector2Int pos)
