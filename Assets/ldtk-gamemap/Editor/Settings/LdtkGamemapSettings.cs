@@ -27,7 +27,7 @@ namespace Assets.ldtk_gamemap.Editor.Settings
         private Vector2 _mapOffset = Vector2.zero;
 
         public string LdtkRelativeProjectPath => _ldtkRelativeProjectPath;
-        public string LdtkProjectPath => Path.Combine(Application.dataPath, LdtkRelativeProjectPath);
+        public string LdtkProjectPath => string.IsNullOrWhiteSpace(LdtkRelativeProjectPath) ? Application.dataPath : Path.Combine(Application.dataPath, LdtkRelativeProjectPath);
         public string GamemapLayer => _gamemapLayer;
         public float MapScale => _mapScale;
         public Vector2 MapOffset => _mapOffset;
