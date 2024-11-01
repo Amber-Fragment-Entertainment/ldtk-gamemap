@@ -46,6 +46,8 @@ namespace Assets.ldtk_gamemap.Editor.Settings
                     }
 
                     EditorGUILayout.PropertyField(serializedSettings.FindProperty("_gamemapLayer"));
+                    EditorGUILayout.PropertyField(serializedSettings.FindProperty("_mapScale"));
+                    EditorGUILayout.PropertyField(serializedSettings.FindProperty("_mapOffset"));
 
                     serializedSettings.ApplyModifiedPropertiesWithoutUndo();
                 },

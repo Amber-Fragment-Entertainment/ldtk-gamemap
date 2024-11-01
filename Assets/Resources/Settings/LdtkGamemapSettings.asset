@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ldtkRelativeProjectPath: ..\..\ldtk test\worldmap.ldtk
   _gamemapLayer: Pathway
+  _mapScale: 2
+  _mapOffset: {x: 0, y: 0}
