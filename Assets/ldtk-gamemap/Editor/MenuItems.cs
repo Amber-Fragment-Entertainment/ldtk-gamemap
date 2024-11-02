@@ -95,17 +95,18 @@ namespace Assets.ldtk_gamemap.Editor
         private static void ConfigureSprite(string assetPath)
         {
             var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
-
             var textureSettings = new TextureImporterSettings();
+            importer.spriteImportMode = SpriteImportMode.Single;
             importer.ReadTextureSettings(textureSettings);
-
-            textureSettings.spriteMode = (int)SpriteDrawMode.Simple;
+            textureSettings.npotScale = TextureImporterNPOTScale.None;
             textureSettings.textureType = TextureImporterType.Sprite;
+            textureSettings.spriteMode = (int)SpriteImportMode.Single;
             textureSettings.spriteMeshType = SpriteMeshType.FullRect;
             textureSettings.spriteAlignment = (int)SpriteAlignment.BottomCenter;
 
             importer.SetTextureSettings(textureSettings);
             importer.SaveAndReimport();
+            AssetDatabase.Refresh();
         }
 
         private static void AddSpritesToScene(IEnumerable<System.Tuple<Level, SimplifiedData>> simplifiedData, LdtkGamemapSettings settings)
