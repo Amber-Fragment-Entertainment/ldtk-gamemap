@@ -98,11 +98,13 @@ namespace Assets.ldtk_gamemap.Editor
             var textureSettings = new TextureImporterSettings();
             importer.spriteImportMode = SpriteImportMode.Single;
             importer.ReadTextureSettings(textureSettings);
+            importer.spritePivot = Vector2.zero;
             textureSettings.npotScale = TextureImporterNPOTScale.None;
             textureSettings.textureType = TextureImporterType.Sprite;
             textureSettings.spriteMode = (int)SpriteImportMode.Single;
             textureSettings.spriteMeshType = SpriteMeshType.FullRect;
-            textureSettings.spriteAlignment = (int)SpriteAlignment.BottomCenter;
+            textureSettings.spriteAlignment = (int)SpriteAlignment.Custom;
+            textureSettings.spritePivot = Vector2.zero;
 
             importer.SetTextureSettings(textureSettings);
             importer.SaveAndReimport();
