@@ -1,6 +1,6 @@
 {
   "name": "com.amberfragment.ldtk-gamemap",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "displayName": "LDtk gamemap",
   "description": "Solution to generate gamemap based on LDtk project",
   "unity": "2020.2",
