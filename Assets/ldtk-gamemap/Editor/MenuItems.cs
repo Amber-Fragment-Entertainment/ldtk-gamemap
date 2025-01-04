@@ -105,6 +105,7 @@ namespace Assets.ldtk_gamemap.Editor
             textureSettings.spriteMeshType = SpriteMeshType.FullRect;
             textureSettings.spriteAlignment = (int)SpriteAlignment.Custom;
             textureSettings.spritePivot = Vector2.zero;
+            textureSettings.readable = true;
 
             importer.SetTextureSettings(textureSettings);
             importer.SaveAndReimport();
